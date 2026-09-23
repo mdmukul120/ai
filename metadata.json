@@ -1,0 +1,6 @@
+{
+  "name": "চারু",
+  "description": "বস মুকুল আহমেদের জন্য চারু - জেমিনি এআই চালিত স্মার্ট পারসোনাল ভয়েস অ্যাসিস্ট্যান্ট ও ডিভাইস কন্ট্রোলার",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

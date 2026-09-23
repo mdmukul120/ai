@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">চারু</string>
+    <string name="boss_name">মুকুল আহমেদ</string>
+    <string name="assistant_title">স্মার্ট পারসোনাল অ্যাসিস্ট্যান্ট</string>
+    <string name="accessibility_service_label">চারু অ্যাসিস্ট্যান্ট কন্ট্রোল সার্ভিস</string>
+    <string name="accessibility_service_description">চারু পারসোনাল অ্যাসিস্ট্যান্ট যাতে আপনার নির্দেশে অ্যাপ খুলতে, মেসেজ অপশনে প্রবেশ করতে এবং ডিভাইস স্বয়ংক্রিয়ভাবে নিয়ন্ত্রণ করতে পারে তার জন্য এই সেবা প্রদান করা হয়।</string>
+</resources>
