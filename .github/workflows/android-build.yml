@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -36,10 +36,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Restore debug keystore
+      - name: Accept Android SDK licenses & install API 36
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" || true
+
+      - name: Restore or generate debug keystore
         run: |
           if [ -f debug.keystore.base64 ]; then
             base64 -d debug.keystore.base64 > debug.keystore
+          fi
+          if [ ! -f debug.keystore ]; then
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
 
       - name: Prepare environment file
@@ -50,18 +58,16 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 9.3.1
 
-      - name: Grant execute permission for gradlew
+      - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        if: "${{ github.event.inputs.build_type != 'release' }}"
+        if: "${{ github.event_name != 'workflow_dispatch' || inputs.build_type == 'debug' }}"
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Build Release APK
-        if: "${{ github.event.inputs.build_type == 'release' }}"
+        if: "${{ github.event_name == 'workflow_dispatch' && inputs.build_type == 'release' }}"
         env:
           STORE_FILE: ${{ secrets.STORE_FILE }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -70,7 +76,7 @@ jobs:
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
-        if: "${{ github.event.inputs.build_type != 'release' }}"
+        if: "${{ github.event_name != 'workflow_dispatch' || inputs.build_type == 'debug' }}"
         with:
           name: Charu-Assistant-Debug-APK
           path: app/build/outputs/apk/debug/*.apk
@@ -78,7 +84,7 @@ jobs:
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
-        if: "${{ github.event.inputs.build_type == 'release' }}"
+        if: "${{ github.event_name == 'workflow_dispatch' && inputs.build_type == 'release' }}"
         with:
           name: Charu-Assistant-Release-APK
           path: app/build/outputs/apk/release/*.apk
